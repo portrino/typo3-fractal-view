@@ -15,30 +15,23 @@ namespace Portrino\Typo3FractalView\Tests\Transformer;
  */
 
 use League\Fractal\TransformerAbstract;
-use Portrino\Typo3FractalView\Tests\Model\Book;
+use Portrino\Typo3FractalView\Tests\Model\Author;
 
 /**
- * Class BookTransformer
+ * Class AuthorTransformer
  * @package Portrino\Typo3FractalView\Tests\Transformer
  */
-class BookTransformer extends TransformerAbstract
+class AuthorTransformer extends TransformerAbstract
 {
     /**
-     * @param Book $book
+     * @param Author $author
      * @return array
      */
-    public function transform(Book $book)
+    public function transform(Author $author)
     {
         return [
-            'id' => (int)$book->id,
-            'title' => $book->title,
-            'year' => (int)$book->yr,
-            'links' => [
-                [
-                    'rel' => 'self',
-                    'uri' => '/books/' . $book->id,
-                ]
-            ],
+            'id' => (int)$author->id,
+            'name' => $author->name
         ];
     }
 }

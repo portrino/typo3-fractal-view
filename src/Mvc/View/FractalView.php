@@ -26,10 +26,12 @@ namespace Portrino\Typo3FractalView\Mvc\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use InvalidArgumentException;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class FractalView
@@ -73,6 +75,14 @@ class FractalView extends JsonView
     }
 
     /**
+     * @param ObjectManagerInterface $objectManager
+     */
+    public function injectObjectManager($objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
+
+    /**
      * Loads the configuration and transforms the value to a serializable
      * array via fractal
      *
@@ -85,15 +95,19 @@ class FractalView extends JsonView
             'data' => []
         ];
 
+        sort($this->variablesToRender);
+
         if (count($this->variablesToRender) === 1) {
             $variableName = current($this->variablesToRender);
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
             $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
             $result = $this->transformObject($valueToRender, [0 => $configuration]);
         } else {
-            $valueToRender = [];
             foreach ($this->variablesToRender as $variableName) {
-                $valueToRender[$variableName] = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
+                $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
+                $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
+                $transformedObject = $this->transformObject($valueToRender, [0 => $configuration]);
+                $result['data'][$variableName] = isset($transformedObject['data']) ? $transformedObject['data'] : '';
             }
         }
         // prevent data array key in result
@@ -107,6 +121,7 @@ class FractalView extends JsonView
      * @param object $object Object to traverse
      * @param array $configuration Configuration for transforming the given object or NULL
      * @return array Object structure as an array
+     * @throws InvalidArgumentException
      */
     protected function transformObject($object, array $configuration)
     {
@@ -115,21 +130,20 @@ class FractalView extends JsonView
         return $this->fractalManager->createData($resource)->toArray();
     }
 
-
     /**
-     * @param $transformerClassName
+     * @param string $transformerClassName
      * @return TransformerAbstract
+     * @throws InvalidArgumentException
      */
     protected function getTransformer($transformerClassName)
     {
-        if (class_exists($transformerClassName) === false) {
-            // @todo: throw exception
-        }
-
+        /** @var TransformerAbstract $result */
         $result = $this->objectManager->get($transformerClassName);
 
         if ($result instanceof TransformerAbstract === false) {
-            // @todo: throw exception
+            throw new InvalidArgumentException(
+                'Argument $transformerClassName should extend League\Fractal\TransformerAbstractq'
+            );
         }
 
         return $result;

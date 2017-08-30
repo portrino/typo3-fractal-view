@@ -14,14 +14,13 @@ namespace Portrino\Typo3FractalView\Tests\Transformer;
  *
  */
 
-use League\Fractal\TransformerAbstract;
 use Portrino\Typo3FractalView\Tests\Model\Book;
 
 /**
- * Class BookTransformer
+ * Class InvalidTransformer
  * @package Portrino\Typo3FractalView\Tests\Transformer
  */
-class BookTransformer extends TransformerAbstract
+class InvalidTransformer
 {
     /**
      * @param Book $book
@@ -31,14 +30,7 @@ class BookTransformer extends TransformerAbstract
     {
         return [
             'id' => (int)$book->id,
-            'title' => $book->title,
-            'year' => (int)$book->yr,
-            'links' => [
-                [
-                    'rel' => 'self',
-                    'uri' => '/books/' . $book->id,
-                ]
-            ],
+            'name' => $book->title
         ];
     }
 }
