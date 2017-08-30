@@ -15,6 +15,7 @@ namespace Portrino\Typo3FractalView\Tests\Transformer;
  */
 
 use League\Fractal\Resource\Item;
+use League\Fractal\Resource\Primitive;
 use League\Fractal\TransformerAbstract;
 use Portrino\Typo3FractalView\Tests\Model\BookWithAuthorRelation;
 
@@ -34,6 +35,15 @@ class BookWithAuthorRelationTransformer extends TransformerAbstract
     ];
 
     /**
+     * Include resources without needing it to be requested.
+     *
+     * @var array
+     */
+    protected $defaultIncludes = [
+        'yr'
+    ];
+
+    /**
      * @param BookWithAuthorRelation $book
      * @return array
      */
@@ -50,6 +60,15 @@ class BookWithAuthorRelationTransformer extends TransformerAbstract
                 ]
             ],
         ];
+    }
+
+    /**
+     * @param BookWithAuthorRelation $book
+     * @return Primitive
+     */
+    public function includeYr(BookWithAuthorRelation $book)
+    {
+        return new Primitive($book->yr);
     }
 
     /**

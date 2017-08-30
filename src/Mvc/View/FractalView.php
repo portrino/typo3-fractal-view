@@ -114,6 +114,7 @@ class FractalView extends JsonView
     /**
      * Sets the includes from magic GET param "_includes"
      *
+     * @codeCoverageIgnore
      * @return void
      */
     protected function setIncludesFromRequest()
@@ -126,12 +127,13 @@ class FractalView extends JsonView
     /**
      * Sets the excludes from magic GET param "_excludes"
      *
+     * @codeCoverageIgnore
      * @return void
      */
     protected function setExcludesFromRequest()
     {
         if ($this->controllerContext->getRequest()->hasArgument('_excludes')) {
-            $this->setIncludes($this->controllerContext->getRequest()->getArgument('_excludes'));
+            $this->setExcludes($this->controllerContext->getRequest()->getArgument('_excludes'));
         }
     }
 
@@ -149,6 +151,7 @@ class FractalView extends JsonView
 
         $this->fractalManager->setSerializer(new ArraySerializer());
         $this->fractalManager->parseIncludes($this->includes);
+        $this->fractalManager->parseExcludes($this->excludes);
 
         sort($this->variablesToRender);
 
@@ -156,18 +159,36 @@ class FractalView extends JsonView
             $variableName = current($this->variablesToRender);
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
             $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
-            $result = $this->transformObject($valueToRender, [0 => $configuration]);
+            $result = $this->transformValue($valueToRender, [0 => $configuration]);
 
         } else {
             foreach ($this->variablesToRender as $variableName) {
                 $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
                 $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
-                $transformedObject = $this->transformObject($valueToRender, [0 => $configuration]);
+                $transformedObject = $this->transformValue($valueToRender, [0 => $configuration]);
                 $result[$variableName] = isset($transformedObject) ? $transformedObject : '';
             }
         }
         // prevent data array key in result
         return $result;
+    }
+
+    /**
+     * Transforms a value depending on type
+     *
+     * @param mixed $value The value to transform
+     * @param array $configuration Configuration for transforming the value
+     * @return array The transformed value
+     */
+    protected function transformValue($value, array $configuration)
+    {
+        if (is_array($value) || $value instanceof ArrayAccess) {
+            return $this->transformCollection($value, $configuration);
+        } elseif (is_object($value)) {
+            return $this->transformObject($value, $configuration);
+        } else {
+            return $value;
+        }
     }
 
     /**
@@ -181,18 +202,24 @@ class FractalView extends JsonView
      */
     protected function transformObject($object, array $configuration)
     {
-        if (is_array($object) || $object instanceof ArrayAccess) {
-            $transformer = $this->getTransformer($configuration[0]);
-            $resource = new Collection($object, $transformer);
-            $result = $this->fractalManager->createData($resource)->toArray();
-        } elseif (is_object($object)) {
-            $transformer = $this->getTransformer($configuration[0]);
-            $resource = new Item($object, $transformer);
-            $result = $this->fractalManager->createData($resource)->toArray();
-        } else {
-            $result = [$object];
-        }
-        return $result;
+        $transformer = $this->getTransformer($configuration[0]);
+        $resource = new Item($object, $transformer);
+        return $this->fractalManager->createData($resource)->toArray();
+    }
+
+    /**
+     * Traverses the given collection
+     *
+     * @param array|ArrayAccess $collection Collection to traverse
+     * @param array $configuration Configuration for transforming the given object or NULL
+     * @return array Object structure as an array
+     * @throws InvalidArgumentException
+     */
+    protected function transformCollection($collection, array $configuration)
+    {
+        $transformer = $this->getTransformer($configuration[0]);
+        $resource = new Collection($collection, $transformer);
+        return $this->fractalManager->createData($resource)->toArray();
     }
 
     /**

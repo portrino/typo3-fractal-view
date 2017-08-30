@@ -211,7 +211,7 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $this->view->setVariablesToRender(['value']);
         $actualJson = $this->view->render();
 
-        static::assertEquals('["foo"]', $actualJson);
+        static::assertEquals('"foo"', $actualJson);
     }
 
     /**
@@ -262,6 +262,34 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
 
         // rendering via pure fractal
         $bookResource = new Item($book, new BookWithAuthorRelationTransformer());
+        $bookArray = $this->fractalManager->createData($bookResource)->toArray();
+
+        $expectedjson = json_encode($bookArray);
+        static::assertEquals($expectedjson, $actualJson);
+    }
+
+    /**
+     * @test
+     */
+    public function renderWithExcludeTest()
+    {
+        $book = new BookWithAuthorRelation(1, 'A Song of Ice and Fire', '1996');
+        $book->author = new Author(1, 'George Raymond Richard Martin');
+
+        $configuration = [
+            'book' => BookWithAuthorRelationTransformer::class
+        ];
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->setExcludes('yr');
+        $this->view->assign('book', $book);
+        $this->view->setVariablesToRender(['book']);
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $bookResource = new Item($book, new BookWithAuthorRelationTransformer());
+        $this->fractalManager->parseExcludes('yr');
         $bookArray = $this->fractalManager->createData($bookResource)->toArray();
 
         $expectedjson = json_encode($bookArray);
