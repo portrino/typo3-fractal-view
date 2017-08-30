@@ -31,6 +31,7 @@ use InvalidArgumentException;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\TransformerAbstract;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -81,7 +82,7 @@ class FractalView extends JsonView
     /**
      * @param Manager $fractalManager
      */
-    public function injectFractalManager($fractalManager)
+    public function injectFractalManager(Manager $fractalManager)
     {
         $this->fractalManager = $fractalManager;
     }
@@ -89,10 +90,51 @@ class FractalView extends JsonView
     /**
      * @param ObjectManagerInterface $objectManager
      */
-    public function injectObjectManager($objectManager)
+    public function injectObjectManager(ObjectManagerInterface $objectManager)
     {
         $this->objectManager = $objectManager;
     }
+
+    /**
+     * Transforms the value view variable to a serializable
+     * array representation using a YAML view configuration and JSON encodes
+     * the result.
+     *
+     * @return string The JSON encoded variables
+     * @api
+     */
+    public function render()
+    {
+        $this->setIncludesFromRequest();
+        $this->setExcludesFromRequest();
+
+        return parent::render();
+    }
+
+    /**
+     * Sets the includes from magic GET param "_includes"
+     *
+     * @return void
+     */
+    protected function setIncludesFromRequest()
+    {
+        if ($this->controllerContext->getRequest()->hasArgument('_includes')) {
+            $this->setIncludes($this->controllerContext->getRequest()->getArgument('_includes'));
+        }
+    }
+
+    /**
+     * Sets the excludes from magic GET param "_excludes"
+     *
+     * @return void
+     */
+    protected function setExcludesFromRequest()
+    {
+        if ($this->controllerContext->getRequest()->hasArgument('_excludes')) {
+            $this->setIncludes($this->controllerContext->getRequest()->getArgument('_excludes'));
+        }
+    }
+
 
     /**
      * Loads the configuration and transforms the value to a serializable
@@ -103,10 +145,9 @@ class FractalView extends JsonView
      */
     protected function renderArray()
     {
-        $result = [
-            'data' => []
-        ];
+        $result = [];
 
+        $this->fractalManager->setSerializer(new ArraySerializer());
         $this->fractalManager->parseIncludes($this->includes);
 
         sort($this->variablesToRender);
@@ -122,11 +163,11 @@ class FractalView extends JsonView
                 $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
                 $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
                 $transformedObject = $this->transformObject($valueToRender, [0 => $configuration]);
-                $result['data'][$variableName] = isset($transformedObject['data']) ? $transformedObject['data'] : '';
+                $result[$variableName] = isset($transformedObject) ? $transformedObject : '';
             }
         }
         // prevent data array key in result
-        return $result['data'];
+        return $result;
     }
 
     /**
@@ -140,16 +181,16 @@ class FractalView extends JsonView
      */
     protected function transformObject($object, array $configuration)
     {
-        $transformer = $this->getTransformer($configuration[0]);
-
         if (is_array($object) || $object instanceof ArrayAccess) {
+            $transformer = $this->getTransformer($configuration[0]);
             $resource = new Collection($object, $transformer);
             $result = $this->fractalManager->createData($resource)->toArray();
         } elseif (is_object($object)) {
+            $transformer = $this->getTransformer($configuration[0]);
             $resource = new Item($object, $transformer);
             $result = $this->fractalManager->createData($resource)->toArray();
         } else {
-            $result = ['data' => $object];
+            $result = [$object];
         }
         return $result;
     }
