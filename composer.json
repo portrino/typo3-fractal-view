@@ -39,5 +39,5 @@
         "psr-4": {
             "Portrino\\Typo3FractalView\\Tests\\": "tests/"
         }
-    },
+    }
 }
