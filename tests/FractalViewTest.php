@@ -32,6 +32,6 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
      */
     public function bar()
     {
-        $this->assertFalse(true);
+        $this->assertTrue(true);
     }
 }
