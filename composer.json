@@ -30,9 +30,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Portrino\\FractalView\\": [
-                "Classes/"
+            "Portrino\\Typo3FractalView\\": [
+                "src/"
             ]
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Portrino\\Typo3FractalView\\Tests\\": "tests/"
+        }
+    },
 }
