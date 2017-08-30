@@ -26,8 +26,9 @@ namespace Portrino\Typo3FractalView\Mvc\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use ArrayAccess;
-use DateTime;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Item;
+use League\Fractal\TransformerAbstract;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
 
 /**
@@ -40,7 +41,13 @@ class FractalView extends JsonView
      * @var \League\Fractal\Manager
      * @inject
      */
-    protected $fractal;
+    protected $fractalManager;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @inject
+     */
+    protected $objectManager;
 
     /**
      * The rendering configuration for this Fractal view which
@@ -58,6 +65,14 @@ class FractalView extends JsonView
     protected $configuration = [];
 
     /**
+     * @param Manager $fractalManager
+     */
+    public function injectFractalManager($fractalManager)
+    {
+        $this->fractalManager = $fractalManager;
+    }
+
+    /**
      * Loads the configuration and transforms the value to a serializable
      * array via fractal
      *
@@ -66,43 +81,23 @@ class FractalView extends JsonView
      */
     protected function renderArray()
     {
+        $result = [
+            'data' => []
+        ];
+
         if (count($this->variablesToRender) === 1) {
             $variableName = current($this->variablesToRender);
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
-            $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : [];
+            $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
+            $result = $this->transformObject($valueToRender, [0 => $configuration]);
         } else {
             $valueToRender = [];
             foreach ($this->variablesToRender as $variableName) {
                 $valueToRender[$variableName] = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
-
-
             }
         }
-
-        return $this->transformValue($valueToRender, $configuration);
-    }
-
-    /**
-     * Transforms a value depending on type recursively using the
-     * supplied configuration.
-     *
-     * @param mixed $value The value to transform
-     * @param array $configuration Configuration for transforming the value
-     * @return array The transformed value
-     */
-    protected function transformValue($value, array $configuration)
-    {
-        if (is_array($value) || $value instanceof ArrayAccess) {
-            $array = [];
-            foreach ($value as $key => $element) {
-                $array[$key] = $this->transformObject($value, isset($configuration[$key]) ? $configuration[$key] : []);
-            }
-            return $array;
-        } elseif (is_object($value)) {
-            return $this->transformObject($value, $configuration);
-        } else {
-            return $value;
-        }
+        // prevent data array key in result
+        return $result['data'];
     }
 
     /**
@@ -115,14 +110,28 @@ class FractalView extends JsonView
      */
     protected function transformObject($object, array $configuration)
     {
-        if ($object instanceof DateTime) {
-            return $object->format(DateTime::ISO8601);
-        } else {
+        $transformer = $this->getTransformer($configuration[0]);
+        $resource = new Item($object, $transformer);
+        return $this->fractalManager->createData($resource)->toArray();
+    }
 
-            $resource = new Fractal\Resource\Item($book, new BookTransformer);
 
-
-            return $propertiesToRender;
+    /**
+     * @param $transformerClassName
+     * @return TransformerAbstract
+     */
+    protected function getTransformer($transformerClassName)
+    {
+        if (class_exists($transformerClassName) === false) {
+            // @todo: throw exception
         }
+
+        $result = $this->objectManager->get($transformerClassName);
+
+        if ($result instanceof TransformerAbstract === false) {
+            // @todo: throw exception
+        }
+
+        return $result;
     }
 }
