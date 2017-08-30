@@ -18,10 +18,36 @@ php:
   - 5.5
   - 5.6
   - 7
-  - 7.1
+
+matrix:
+  fast_finish: true
+  exclude:
+    - php: 5.5
+      env: TYPO3_VERSION="^7.6"
+    - php: 5.5
+      env: TYPO3_VERSION="^8.7"
+    - php: 5.6
+      env: TYPO3_VERSION="^7.6"
+    - php: 5.6
+      env: TYPO3_VERSION="^8.7"
+    - php: 7.0
+      env: TYPO3_VERSION="^7.6"
+    - php: 7.0
+      env: TYPO3_VERSION="^8.7"
 
 before_install:
-  - composer self-update
+  - |
+      # Disable Xdebug extension ...
+      sed -i'' -e 's/^/;/g' ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || true
+      php -v | grep -i xdebug || true
+  - |
+      composer self-update
+      composer validate
+  - |
+      # Preparing Guzzle dependency ...
+      if [[ ! $deps && $guzzle ]]; then
+        composer require typo3/cms "$TYPO3_VERSION" --no-update
+      fi
 
 install:
   - composer install
