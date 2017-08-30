@@ -1,0 +1,38 @@
+{
+    "name": "portrino/typo3-fractal-view",
+    "description": "Integrates the fractal package (https://fractal.thephpleague.com/) into TYPO3 Extbase",
+    "keywords": [
+        "TYPO3",
+        "extbase",
+        "view",
+        "json",
+        "fractal"
+    ],
+    "homepage": "github.com/portrino/typo3-fractal",
+    "support": {
+        "issues": "github.com/portrino/typo3-fractal/issues"
+    },
+    "authors": [
+        {
+            "name": "André Wuttig",
+            "email": "wuttig@portrino.de",
+            "role": "Developer"
+        }
+    ],
+    "license": "GPL-2.0+",
+    "require": {
+        "php": ">=5.5.0",
+
+        "typo3/cms-core": "^7.6 || ^8.7",
+        "typo3/cms-extbase": "^7.6 || ^8.7",
+
+        "league/fractal": "~0.17.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Portrino\\Fractal\\": [
+                "Classes/"
+            ]
+        }
+    }
+}
