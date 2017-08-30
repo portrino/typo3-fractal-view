@@ -15,12 +15,15 @@ namespace Portrino\Typo3FractalView\Tests;
  */
 
 use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Portrino\Typo3FractalView\Mvc\View\FractalView;
 use Portrino\Typo3FractalView\Tests\Model\Author;
 use Portrino\Typo3FractalView\Tests\Model\Book;
+use Portrino\Typo3FractalView\Tests\Model\BookWithAuthorRelation;
 use Portrino\Typo3FractalView\Tests\Transformer\AuthorTransformer;
 use Portrino\Typo3FractalView\Tests\Transformer\BookTransformer;
+use Portrino\Typo3FractalView\Tests\Transformer\BookWithAuthorRelationTransformer;
 use Portrino\Typo3FractalView\Tests\Transformer\InvalidTransformer;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerContext;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
@@ -64,12 +67,13 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $this->objectManager = $this->getMock(
             ObjectManagerInterface::class
         );
-        $this->objectManager->expects($this->any())
+        $this->objectManager->expects(static::any())
             ->method('get')
             ->willReturnMap([
                 [BookTransformer::class, new BookTransformer()],
                 [AuthorTransformer::class, new AuthorTransformer()],
-                [InvalidTransformer::class, new InvalidTransformer()]
+                [InvalidTransformer::class, new InvalidTransformer()],
+                [BookWithAuthorRelationTransformer::class, new BookWithAuthorRelationTransformer()]
             ]);
         $this->view->injectObjectManager($this->objectManager);
 
@@ -83,9 +87,9 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
             Response::class
         );
         $this->controllerContext
-            ->expects($this->any())
+            ->expects(static::any())
             ->method('getResponse')
-            ->will($this->returnValue($this->response));
+            ->will(static::returnValue($this->response));
 
         $this->view->setControllerContext($this->controllerContext);
     }
@@ -111,7 +115,7 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $resource = new Item($book, new BookTransformer);
         $expectedjson = json_encode($fractal->createData($resource)->toArray()['data']);
 
-        $this->assertEquals($expectedjson, $actualJson);
+        static::assertEquals($expectedjson, $actualJson);
     }
 
     /**
@@ -143,7 +147,91 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $authorArray = $fractal->createData($authorResource)->toArray()['data'];
 
         $expectedjson = json_encode(['author' => $authorArray, 'book' => $bookArray]);
-        $this->assertEquals($expectedjson, $actualJson);
+        static::assertEquals($expectedjson, $actualJson);
+    }
+
+    /**
+     * @test
+     */
+    public function renderCollectionTest()
+    {
+        $books = [
+            new Book(1, 'A Song of Ice and Fire 1', '1996'),
+            new Book(2, 'A Song of Ice and Fire 2', '1997'),
+            new Book(3, 'A Song of Ice and Fire 3', '1998')
+        ];
+
+        $configuration = [
+            'books' => BookTransformer::class
+        ];
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->assign('books', $books);
+        $this->view->setVariablesToRender(['books']);
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $fractal = new Manager();
+        $bookResource = new Collection($books, new BookTransformer);
+
+        $booksArray = $fractal->createData($bookResource)->toArray()['data'];
+
+        $expectedjson = json_encode($booksArray);
+        static::assertEquals($expectedjson, $actualJson);
+    }
+
+    /**
+     * @test
+     */
+    public function includeTest()
+    {
+        $book = new BookWithAuthorRelation(1, 'A Song of Ice and Fire', '1996');
+        $book->author = new Author(1, 'George Raymond Richard Martin');
+
+        $configuration = [
+            'book' => BookWithAuthorRelationTransformer::class
+        ];
+
+        /**
+         *
+         * without include
+         */
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->assign('book', $book);
+        $this->view->setVariablesToRender(['book']);
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $fractal = new Manager();
+        $bookResource = new Item($book, new BookWithAuthorRelationTransformer());
+        $bookArray = $fractal->createData($bookResource)->toArray()['data'];
+
+        $expectedjson = json_encode($bookArray);
+        static::assertEquals($expectedjson, $actualJson);
+
+        /**
+         *
+         * with include
+         */
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->setIncludes('author');
+        $this->view->assign('book', $book);
+        $this->view->setVariablesToRender(['book']);
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $fractal = new Manager();
+        $bookResource = new Item($book, new BookWithAuthorRelationTransformer());
+        $fractal->parseIncludes('author');
+        $bookArray = $fractal->createData($bookResource)->toArray()['data'];
+
+        $expectedjson = json_encode($bookArray);
+        static::assertEquals($expectedjson, $actualJson);
     }
 
     /**
@@ -156,7 +244,10 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
             'book' => InvalidTransformer::class
         ];
 
-        $this->setExpectedException('InvalidArgumentException', 'Argument $transformerClassName should extend League\Fractal\TransformerAbstract');
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Argument $transformerClassName should extend League\Fractal\TransformerAbstract'
+        );
 
         // rendering via fractal view
         $this->view->setConfiguration($configuration);

@@ -14,10 +14,10 @@ namespace Portrino\Typo3FractalView\Tests\Model;
  */
 
 /**
- * Class Book
+ * Class BookWithAuthorRelation
  * @package Portrino\Typo3FractalView\Tests\Model
  */
-class Book
+class BookWithAuthorRelation
 {
     /**
      * @var int
@@ -33,6 +33,11 @@ class Book
      * @var int
      */
     public $yr;
+
+    /**
+     * @var Author
+     */
+    public $author;
 
     /**
      * Book constructor.

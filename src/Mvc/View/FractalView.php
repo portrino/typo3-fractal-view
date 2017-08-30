@@ -26,8 +26,10 @@ namespace Portrino\Typo3FractalView\Mvc\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use ArrayAccess;
 use InvalidArgumentException;
 use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
@@ -50,6 +52,16 @@ class FractalView extends JsonView
      * @inject
      */
     protected $objectManager;
+
+    /**
+     * @var string
+     */
+    protected $includes = '';
+
+    /**
+     * @var string
+     */
+    protected $excludes = '';
 
     /**
      * The rendering configuration for this Fractal view which
@@ -95,6 +107,8 @@ class FractalView extends JsonView
             'data' => []
         ];
 
+        $this->fractalManager->parseIncludes($this->includes);
+
         sort($this->variablesToRender);
 
         if (count($this->variablesToRender) === 1) {
@@ -102,6 +116,7 @@ class FractalView extends JsonView
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
             $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
             $result = $this->transformObject($valueToRender, [0 => $configuration]);
+
         } else {
             foreach ($this->variablesToRender as $variableName) {
                 $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
@@ -126,8 +141,17 @@ class FractalView extends JsonView
     protected function transformObject($object, array $configuration)
     {
         $transformer = $this->getTransformer($configuration[0]);
-        $resource = new Item($object, $transformer);
-        return $this->fractalManager->createData($resource)->toArray();
+
+        if (is_array($object) || $object instanceof ArrayAccess) {
+            $resource = new Collection($object, $transformer);
+            $result = $this->fractalManager->createData($resource)->toArray();
+        } elseif (is_object($object)) {
+            $resource = new Item($object, $transformer);
+            $result = $this->fractalManager->createData($resource)->toArray();
+        } else {
+            $result = ['data' => $object];
+        }
+        return $result;
     }
 
     /**
@@ -147,5 +171,21 @@ class FractalView extends JsonView
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $includes
+     */
+    public function setIncludes($includes)
+    {
+        $this->includes = $includes;
+    }
+
+    /**
+     * @param string $excludes
+     */
+    public function setExcludes($excludes)
+    {
+        $this->excludes = $excludes;
     }
 }
