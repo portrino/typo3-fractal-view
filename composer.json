@@ -8,9 +8,9 @@
         "json",
         "fractal"
     ],
-    "homepage": "github.com/portrino/typo3-fractal",
+    "homepage": "https://github.com/portrino/typo3-fractal",
     "support": {
-        "issues": "github.com/portrino/typo3-fractal/issues"
+        "issues": "https://github.com/portrino/typo3-fractal/issues"
     },
     "authors": [
         {
@@ -30,7 +30,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Portrino\\Fractal\\": [
+            "Portrino\\FractalView\\": [
                 "Classes/"
             ]
         }
