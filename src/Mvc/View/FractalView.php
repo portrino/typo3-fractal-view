@@ -219,7 +219,7 @@ class FractalView extends JsonView
     {
         $transformer = $this->getTransformer($configuration[0]);
         $resource = new Collection($collection, $transformer);
-        return $this->fractalManager->createData($resource)->toArray();
+        return $this->fractalManager->createData($resource)->toArray()['data'];
     }
 
     /**
