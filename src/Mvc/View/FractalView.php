@@ -37,6 +37,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class FractalView
+ *
  * @package Portrino\Typo3FractalView\Mvc\View
  */
 class FractalView extends JsonView
@@ -114,7 +115,7 @@ class FractalView extends JsonView
      * Sets the includes from magic GET param "_includes"
      *
      * @codeCoverageIgnore
-     * @return void
+     * @return             void
      */
     protected function setIncludesFromRequest()
     {
@@ -127,7 +128,7 @@ class FractalView extends JsonView
      * Sets the excludes from magic GET param "_excludes"
      *
      * @codeCoverageIgnore
-     * @return void
+     * @return             void
      */
     protected function setExcludesFromRequest()
     {
@@ -174,8 +175,8 @@ class FractalView extends JsonView
     /**
      * Transforms a value depending on type
      *
-     * @param mixed $value The value to transform
-     * @param array $configuration Configuration for transforming the value
+     * @param  mixed $value         The value to transform
+     * @param  array $configuration Configuration for transforming the value
      * @return array The transformed value
      */
     protected function transformValue($value, array $configuration)
@@ -193,8 +194,8 @@ class FractalView extends JsonView
      * Traverses the given object structure in order to transform it into an
      * array structure.
      *
-     * @param object $object Object to traverse
-     * @param array $configuration Configuration for transforming the given object or NULL
+     * @param  object $object        Object to traverse
+     * @param  array  $configuration Configuration for transforming the given object or NULL
      * @return array Object structure as an array
      * @throws InvalidArgumentException
      */
@@ -208,8 +209,8 @@ class FractalView extends JsonView
     /**
      * Traverses the given collection
      *
-     * @param array|ArrayAccess $collection Collection to traverse
-     * @param array $configuration Configuration for transforming the given object or NULL
+     * @param  array|ArrayAccess $collection    Collection to traverse
+     * @param  array             $configuration Configuration for transforming the given object or NULL
      * @return array Object structure as an array
      * @throws InvalidArgumentException
      */
@@ -227,7 +228,11 @@ class FractalView extends JsonView
      */
     protected function getTransformer($transformerClassName)
     {
-        /** @var TransformerAbstract $result */
+        /**
+* 
+         *
+ * @var TransformerAbstract $result 
+*/
         $result = $this->objectManager->get($transformerClassName);
 
         if ($result instanceof TransformerAbstract === false) {

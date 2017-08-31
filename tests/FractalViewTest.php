@@ -345,6 +345,7 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         // rendering via fractal view
         $this->view->setConfiguration($configuration);
         $this->view->assign('book', $book);
+        $this->view->setVariablesToRender([]);
         $this->view->addVariableToRender('book');
         $actualJson = $this->view->render();
 
@@ -372,6 +373,7 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $this->view->setConfiguration($configuration);
         $this->view->assign('author', $author);
         $this->view->assign('book', $book);
+        $this->view->setVariablesToRender([]);
         $this->view->addVariablesToRender(['book', 'author']);
         $actualJson = $this->view->render();
 
