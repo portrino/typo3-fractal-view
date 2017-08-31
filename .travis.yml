@@ -43,9 +43,12 @@ before_install:
       if [[ ! $deps && $guzzle ]]; then
         composer require typo3/cms "$TYPO3_VERSION" --no-update
       fi
+  - pyrus install pear/PHP_CodeSniffer
+  - phpenv rehash
 
 install:
   - composer install
 
 script:
+  - phpcs --standard=psr2 src/
   - vendor/bin/phpunit
