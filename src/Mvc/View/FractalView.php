@@ -1,5 +1,4 @@
 <?php
-
 namespace Portrino\Typo3FractalView\Mvc\View;
 
 /***************************************************************
@@ -160,7 +159,6 @@ class FractalView extends JsonView
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
             $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
             $result = $this->transformValue($valueToRender, [0 => $configuration]);
-
         } else {
             foreach ($this->variablesToRender as $variableName) {
                 $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
