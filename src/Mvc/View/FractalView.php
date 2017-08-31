@@ -43,13 +43,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class FractalView extends JsonView
 {
     /**
-     * Only variables whose name is contained in this array will be rendered
-     *
-     * @var array
-     */
-    protected $variablesToRender = [];
-
-    /**
      * @var \League\Fractal\Manager
      * @inject
      */
