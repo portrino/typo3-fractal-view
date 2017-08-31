@@ -317,4 +317,74 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $this->view->setVariablesToRender(['book']);
         $this->view->render();
     }
+
+    /**
+     * @test
+     */
+    public function getConfigurationTest()
+    {
+        $configuration = [
+            'book' => InvalidTransformer::class
+        ];
+
+        $this->view->render();
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->assertEquals($configuration['book'], $this->view->getConfiguration()['book']);
+    }
+
+    /**
+     * @test
+     */
+    public function addVariableToRenderTest()
+    {
+        $book = new Book(1, 'A Song of Ice and Fire', '1996');
+        $configuration = [
+            'book' => BookTransformer::class
+        ];
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->assign('book', $book);
+        $this->view->addVariableToRender('book');
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $resource = new Item($book, new BookTransformer);
+        $expectedjson = json_encode($this->fractalManager->createData($resource)->toArray());
+
+        static::assertEquals($expectedjson, $actualJson);
+    }
+
+    /**
+     * @test
+     */
+    public function addVariablesToRenderTest()
+    {
+        $book = new Book(1, 'A Song of Ice and Fire', '1996');
+        $author = new Author(1, 'George Raymond Richard Martin');
+
+        $configuration = [
+            'author' => AuthorTransformer::class,
+            'book' => BookTransformer::class
+        ];
+
+        // rendering via fractal view
+        $this->view->setConfiguration($configuration);
+        $this->view->assign('author', $author);
+        $this->view->assign('book', $book);
+        $this->view->addVariablesToRender(['book', 'author']);
+        $actualJson = $this->view->render();
+
+        // rendering via pure fractal
+        $bookResource = new Item($book, new BookTransformer);
+        $authorResource = new Item($author, new AuthorTransformer());
+
+        $bookArray = $this->fractalManager->createData($bookResource)->toArray();
+        $authorArray = $this->fractalManager->createData($authorResource)->toArray();
+
+        $expectedjson = json_encode(['author' => $authorArray, 'book' => $bookArray]);
+        static::assertEquals($expectedjson, $actualJson);
+    }
 }

@@ -43,6 +43,13 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class FractalView extends JsonView
 {
     /**
+     * Only variables whose name is contained in this array will be rendered
+     *
+     * @var array
+     */
+    protected $variablesToRender = [];
+
+    /**
      * @var \League\Fractal\Manager
      * @inject
      */
@@ -255,5 +262,31 @@ class FractalView extends JsonView
     public function setExcludes($excludes)
     {
         $this->excludes = $excludes;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
+     * @param string $variable
+     */
+    public function addVariableToRender($variable)
+    {
+        $this->variablesToRender[$variable] = $variable;
+    }
+
+    /**
+     * @param array $variables
+     */
+    public function addVariablesToRender($variables)
+    {
+        foreach ($variables as $variable) {
+            $this->variablesToRender[$variable] = $variable;
+        }
     }
 }
