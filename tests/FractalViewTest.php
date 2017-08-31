@@ -188,10 +188,8 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
         $actualJson = $this->view->render();
 
         // rendering via pure fractal
-        $fractal = new Manager();
         $bookResource = new Collection($books, new BookTransformer);
-
-        $booksArray = $fractal->createData($bookResource)->toArray();
+        $booksArray = $this->fractalManager->createData($bookResource)->toArray()['data'];
 
         $expectedjson = json_encode($booksArray);
         static::assertEquals($expectedjson, $actualJson);
