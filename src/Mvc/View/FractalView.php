@@ -229,9 +229,9 @@ class FractalView extends JsonView
     protected function getTransformer($transformerClassName)
     {
         /**
-* 
+*
          *
- * @var TransformerAbstract $result 
+ * @var TransformerAbstract $result
 */
         $result = $this->objectManager->get($transformerClassName);
 
