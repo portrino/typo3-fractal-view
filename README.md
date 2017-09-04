@@ -22,7 +22,7 @@ renders the corresponding view for you. By putting the FractalView class into th
 
 ```php
 use Portrino\Typo3FractalView\Mvc\View\FractalView;
-use Portrino\Typo3FractalView\Transformer\BookingTransformer;
+use Foo\Bar\Transformer\BookingTransformer;
 
 class BookingController
 {
@@ -59,3 +59,28 @@ class BookingController
 ```
 
 The only thing you have to do is implement the `BookingTransformer` class by your own like described here: https://fractal.thephpleague.com/transformers/
+
+Example:
+
+```php
+namespace Foo\Bar\Transformer;
+
+use Foo\Bar\Domain\Model\Booking;
+
+class BookingTransformer
+{
+   /**
+     * @param Booking $booking
+     * @return array
+     */
+    public function transform(Booking $booking)
+    {
+        return [
+            'uid' => $booking->getUid(),
+            'start' => $booking->getStart()->format(DateTime::ISO8601),
+            'end' => $booking->getEnd()->format(DateTime::ISO8601)
+        ];
+    }
+}
+
+```
