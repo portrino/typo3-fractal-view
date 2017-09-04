@@ -1,6 +1,6 @@
 <?php
 
-namespace Portrino\Typo3FractalView\Tests;
+namespace Portrino\Typo3FractalView\Tests\Mvc\View;
 
 /*
  * This file is part of the TYPO3 Fractal View project.
@@ -17,8 +17,9 @@ namespace Portrino\Typo3FractalView\Tests;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use League\Fractal\Serializer\ArraySerializer;
+use PHPUnit_Framework_TestCase;
 use Portrino\Typo3FractalView\Mvc\View\FractalView;
+use Portrino\Typo3FractalView\Serializer\ArraySerializer;
 use Portrino\Typo3FractalView\Tests\Model\Author;
 use Portrino\Typo3FractalView\Tests\Model\Book;
 use Portrino\Typo3FractalView\Tests\Model\BookWithAuthorRelation;
@@ -32,9 +33,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * Class FractalViewTest
- * @package Portrino\Typo3FractalView\Tests
+ * @package Portrino\Typo3FractalView\Tests\Mvc\View
  */
-class FractalViewTest extends \PHPUnit_Framework_TestCase
+class FractalViewTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var FractalView
@@ -189,7 +190,7 @@ class FractalViewTest extends \PHPUnit_Framework_TestCase
 
         // rendering via pure fractal
         $bookResource = new Collection($books, new BookTransformer);
-        $booksArray = $this->fractalManager->createData($bookResource)->toArray()['data'];
+        $booksArray = $this->fractalManager->createData($bookResource)->toArray();
 
         $expectedjson = json_encode($booksArray);
         static::assertEquals($expectedjson, $actualJson);

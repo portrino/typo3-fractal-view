@@ -1,4 +1,5 @@
 <?php
+
 namespace Portrino\Typo3FractalView\Mvc\View;
 
 /***************************************************************
@@ -30,8 +31,8 @@ use InvalidArgumentException;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\TransformerAbstract;
+use Portrino\Typo3FractalView\Serializer\ArraySerializer;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
@@ -175,7 +176,7 @@ class FractalView extends JsonView
     /**
      * Transforms a value depending on type
      *
-     * @param  mixed $value         The value to transform
+     * @param  mixed $value The value to transform
      * @param  array $configuration Configuration for transforming the value
      * @return array The transformed value
      */
@@ -194,8 +195,8 @@ class FractalView extends JsonView
      * Traverses the given object structure in order to transform it into an
      * array structure.
      *
-     * @param  object $object        Object to traverse
-     * @param  array  $configuration Configuration for transforming the given object or NULL
+     * @param  object $object Object to traverse
+     * @param  array $configuration Configuration for transforming the given object or NULL
      * @return array Object structure as an array
      * @throws InvalidArgumentException
      */
@@ -209,8 +210,8 @@ class FractalView extends JsonView
     /**
      * Traverses the given collection
      *
-     * @param  array|ArrayAccess $collection    Collection to traverse
-     * @param  array             $configuration Configuration for transforming the given object or NULL
+     * @param  array|ArrayAccess $collection Collection to traverse
+     * @param  array $configuration Configuration for transforming the given object or NULL
      * @return array Object structure as an array
      * @throws InvalidArgumentException
      */
@@ -218,7 +219,7 @@ class FractalView extends JsonView
     {
         $transformer = $this->getTransformer($configuration[0]);
         $resource = new Collection($collection, $transformer);
-        return $this->fractalManager->createData($resource)->toArray()['data'];
+        return $this->fractalManager->createData($resource)->toArray();
     }
 
     /**
@@ -229,10 +230,10 @@ class FractalView extends JsonView
     protected function getTransformer($transformerClassName)
     {
         /**
-*
          *
- * @var TransformerAbstract $result
-*/
+         *
+         * @var TransformerAbstract $result
+         */
         $result = $this->objectManager->get($transformerClassName);
 
         if ($result instanceof TransformerAbstract === false) {
