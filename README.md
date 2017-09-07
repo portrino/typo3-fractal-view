@@ -49,7 +49,7 @@ class BookingController
     {
         $this->view->assign('booking', $booking);
         $view->setConfiguration([
-            '$booking' => BookingTransformer::class
+            'booking' => BookingTransformer::class
         ]);
         $this->view->setVariablesToRender(['booking']);
     }
