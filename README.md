@@ -14,7 +14,7 @@ Integrates the fractal package (https://fractal.thephpleague.com/) into TYPO3 Ex
 You need to add the repository into your composer.json file
 
 ```bash
-    composer require --dev portrino/typo3-fractal-view
+    composer require portrino/typo3-fractal-view
 ```
 
 ### Extbase view
@@ -52,7 +52,7 @@ class BookingController
     {
         $this->view->assign('booking', $booking);
         $view->setConfiguration([
-            '$booking' => BookingTransformer::class
+            'booking' => BookingTransformer::class
         ]);
         $this->view->setVariablesToRender(['booking']);
     }
