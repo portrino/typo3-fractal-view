@@ -1,4 +1,6 @@
-dist: trusty
+env:
+  global:
+      - CC_TEST_REPORTER_ID=8ee4df2235e6338bf10d28298db37e6f8b1a7e3526619826a3290cb14af9da1d
 
 language: php
 
@@ -31,22 +33,25 @@ matrix:
       env: TYPO3_VERSION="^8.7"
 
 before_install:
-  - |
-      # Disable Xdebug extension ...
-      sed -i'' -e 's/^/;/g' ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || true
-      php -v | grep -i xdebug || true
-  - |
-      composer self-update
-      composer validate
-  - |
-      # Preparing Guzzle dependency ...
-      if [[ ! $deps && $guzzle ]]; then
-        composer require typo3/cms "$TYPO3_VERSION" --no-update
-      fi
+  - composer self-update
+  - composer --version
 
-install:
-  - composer install
+before_script:
+  - composer require typo3/cms=$TYPO3_VERSION
+  # Restore composer.json
+  - git checkout composer.json
+  - export TYPO3_PATH_WEB=$PWD/.Build/Web
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
-  - vendor/bin/phpcs --standard=psr2 src/ tests/
-  - vendor/bin/phpunit
+  - >
+    echo;
+    echo "Running unit tests";
+    .Build/bin/phpunit --colors --coverage-clover build/logs/clover.xml
+
+  - >
+    echo;
+    echo "Running PHP PSR-2 Coding Standards Checks";
+    .Build/bin/phpcs --standard=PSR2  --warning-severity=0 src/ tests/
