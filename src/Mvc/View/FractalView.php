@@ -161,7 +161,9 @@ class FractalView extends JsonView
             $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
             $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
             $result = $this->transformValue($valueToRender, [0 => $configuration]);
-        } else {
+        }
+
+        if (count($this->variablesToRender) > 1) {
             foreach ($this->variablesToRender as $variableName) {
                 $valueToRender = isset($this->variables[$variableName]) ? $this->variables[$variableName] : null;
                 $configuration = isset($this->configuration[$variableName]) ? $this->configuration[$variableName] : '';
@@ -169,6 +171,7 @@ class FractalView extends JsonView
                 $result[$variableName] = isset($transformedObject) ? $transformedObject : '';
             }
         }
+
         // prevent data array key in result
         return $result;
     }
@@ -182,13 +185,14 @@ class FractalView extends JsonView
      */
     protected function transformValue($value, array $configuration)
     {
+        $result = $value;
         if (is_array($value) || $value instanceof ArrayAccess) {
-            return $this->transformCollection($value, $configuration);
-        } elseif (is_object($value)) {
-            return $this->transformObject($value, $configuration);
-        } else {
-            return $value;
+            $result = $this->transformCollection($value, $configuration);
         }
+        if (is_object($value)) {
+            $result = $this->transformObject($value, $configuration);
+        }
+        return $result;
     }
 
     /**
