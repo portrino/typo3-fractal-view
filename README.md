@@ -1,9 +1,9 @@
 # TYPO3 Fractal View
 
 [![Build Status](https://travis-ci.org/portrino/typo3-fractal-view.svg?branch=master)](https://travis-ci.org/portrino/typo3-fractal-view)
-[![Code Climate](https://codeclimate.com/github/portrino/svconnector_csv_extended/badges/gpa.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view)
-[![Test Coverage](https://codeclimate.com/github/portrino/svconnector_csv_extended/badges/coverage.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view/coverage)
-[![Issue Count](https://codeclimate.com/github/portrino/svconnector_csv_extended/badges/issue_count.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view)
+[![Code Climate](https://codeclimate.com/github/portrino/typo3-fractal-view/badges/gpa.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view)
+[![Test Coverage](https://codeclimate.com/github/portrino/typo3-fractal-view/badges/coverage.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view/coverage)
+[![Issue Count](https://codeclimate.com/github/portrino/typo3-fractal-view/badges/issue_count.svg)](https://codeclimate.com/github/portrino/typo3-fractal-view)
 [![Latest Stable Version](https://poser.pugx.org/portrino/typo3-fractal-view/version)](https://packagist.org/packages/portrino/typo3-fractal-view)
 [![Total Downloads](https://poser.pugx.org/portrino/typo3-fractal-view/downloads)](https://packagist.org/packages/portrino/typo3-fractal-view)
 
