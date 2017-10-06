@@ -137,8 +137,7 @@ class FractalView extends JsonView
             $this->setExcludes($this->controllerContext->getRequest()->getArgument('_excludes'));
         }
     }
-
-
+    
     /**
      * Loads the configuration and transforms the value to a serializable
      * array via fractal
@@ -189,7 +188,7 @@ class FractalView extends JsonView
         if (is_array($value) || $value instanceof ArrayAccess) {
             $result = $this->transformCollection($value, $configuration);
         }
-        if (is_object($value)) {
+        else if (is_object($value)) {
             $result = $this->transformObject($value, $configuration);
         }
         return $result;
@@ -242,7 +241,7 @@ class FractalView extends JsonView
 
         if ($result instanceof TransformerAbstract === false) {
             throw new InvalidArgumentException(
-                'Argument $transformerClassName should extend League\Fractal\TransformerAbstractq'
+                'Argument $transformerClassName should extend League\Fractal\TransformerAbstract'
             );
         }
 
