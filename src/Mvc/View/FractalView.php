@@ -2,29 +2,17 @@
 
 namespace Portrino\Typo3FractalView\Mvc\View;
 
-/***************************************************************
- *  Copyright notice
+/*
+ * This file is part of the TYPO3 Fractal View project.
  *
- *  (c) 2017 Andre Wuttig <wuttig@portrino.de>, portrino GmbH
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
  *
- *  All rights reserved
+ * For the full copyright and license information, please read
+ * LICENSE file that was distributed with this source code.
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
 use ArrayAccess;
 use InvalidArgumentException;
@@ -137,7 +125,7 @@ class FractalView extends JsonView
             $this->setExcludes($this->controllerContext->getRequest()->getArgument('_excludes'));
         }
     }
-    
+
     /**
      * Loads the configuration and transforms the value to a serializable
      * array via fractal
@@ -187,8 +175,7 @@ class FractalView extends JsonView
         $result = $value;
         if (is_array($value) || $value instanceof ArrayAccess) {
             $result = $this->transformCollection($value, $configuration);
-        }
-        else if (is_object($value)) {
+        } else if (is_object($value)) {
             $result = $this->transformObject($value, $configuration);
         }
         return $result;
