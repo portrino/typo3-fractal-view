@@ -50,9 +50,9 @@ class BookWithAuthorRelationTransformer extends TransformerAbstract
     public function transform(BookWithAuthorRelation $book)
     {
         return [
-            'id' => (int)$book->id,
+            'id' => $book->id,
             'title' => $book->title,
-            'year' => (int)$book->yr,
+            'year' => $book->yr,
             'links' => [
                 [
                     'rel' => 'self',

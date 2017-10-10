@@ -30,7 +30,7 @@ class BookWithAuthorRelation
     public $title;
 
     /**
-     * @var int
+     * @var string
      */
     public $yr;
 
@@ -43,7 +43,7 @@ class BookWithAuthorRelation
      * Book constructor.
      * @param int $id
      * @param string $title
-     * @param int $yr
+     * @param string $yr
      */
     public function __construct($id, $title, $yr)
     {

@@ -20,17 +20,17 @@ matrix:
   fast_finish: true
   include:
     - php: 5.5
-      env: TYPO3_VERSION="^7.6"
+      env: TYPO3_VERSION=^7.6 PHPSTAN=0
     - php: 5.6
-      env: TYPO3_VERSION="^7.6"
+      env: TYPO3_VERSION=^7.6 PHPSTAN=0
     - php: 7.0
-      env: TYPO3_VERSION="^7.6"
+      env: TYPO3_VERSION=^7.6 PHPSTAN=1
     - php: 7.0
-      env: TYPO3_VERSION="^8.7"
+      env: TYPO3_VERSION=^8.7 PHPSTAN=1
     - php: 7.1
-      env: TYPO3_VERSION="^7.6"
+      env: TYPO3_VERSION=^7.6 PHPSTAN=1
     - php: 7.1
-      env: TYPO3_VERSION="^8.7"
+      env: TYPO3_VERSION=^8.7 PHPSTAN=1
 
 before_install:
   - composer self-update
@@ -40,7 +40,7 @@ before_script:
   - composer require typo3/cms=$TYPO3_VERSION
   # Restore composer.json
   - git checkout composer.json
-  - export TYPO3_PATH_WEB=$PWD/.Build/Web
+  - export TYPO3_PATH_WEB=$PWD/build/web
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
@@ -49,12 +49,17 @@ script:
   - >
     echo;
     echo "Running unit tests";
-    .Build/bin/phpunit --colors --coverage-clover build/logs/clover.xml
+    build/bin/phpunit --colors --coverage-clover build/logs/clover.xml
 
   - >
     echo;
     echo "Running PHP PSR-2 Coding Standards Checks";
-    .Build/bin/phpcs --standard=PSR2  --warning-severity=0 src/ tests/
+    build/bin/phpcs --standard=PSR2  --warning-severity=0 src/ tests/
+
+  - >
+    echo;
+    echo "Running PHP Static Analysis";
+    if [[ $PHPSTAN = 1 ]]; then composer require --dev phpstan/phpstan:^0.8 && build/bin/phpstan analyse -c phpstan.neon -l 7 src tests; fi
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

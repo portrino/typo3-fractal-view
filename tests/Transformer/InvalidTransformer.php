@@ -29,7 +29,7 @@ class InvalidTransformer
     public function transform(Book $book)
     {
         return [
-            'id' => (int)$book->id,
+            'id' => $book->id,
             'name' => $book->title
         ];
     }

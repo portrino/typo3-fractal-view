@@ -30,7 +30,7 @@ class AuthorTransformer extends TransformerAbstract
     public function transform(Author $author)
     {
         return [
-            'id' => (int)$author->id,
+            'id' => $author->id,
             'name' => $author->name
         ];
     }

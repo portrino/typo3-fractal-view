@@ -17,6 +17,7 @@ namespace Portrino\Typo3FractalView\Tests\Mvc\View;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use Portrino\Typo3FractalView\Mvc\View\FractalView;
 use Portrino\Typo3FractalView\Serializer\ArraySerializer;
@@ -38,27 +39,27 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 class FractalViewTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var FractalView
+     * @var FractalView|PHPUnit_Framework_MockObject_MockObject
      */
     protected $view;
 
     /**
-     * @var ControllerContext
+     * @var ControllerContext|PHPUnit_Framework_MockObject_MockObject
      */
     protected $controllerContext;
 
     /**
-     * @var Response
+     * @var Response|PHPUnit_Framework_MockObject_MockObject
      */
     protected $response;
 
     /**
-     * @var Manager
+     * @var Manager|PHPUnit_Framework_MockObject_MockObject
      */
     protected $fractalManager;
 
     /**
-     * @var ObjectManagerInterface
+     * @var ObjectManagerInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $objectManager;
 
