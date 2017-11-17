@@ -91,7 +91,7 @@ class BookingTransformer
 ## Authors
 
 ![](https://avatars0.githubusercontent.com/u/726519?s=40&v=4)
-![](https://avatars0.githubusercontent.com/u/540478?s=40&v=4)
+![](https://avatars2.githubusercontent.com/u/328502?s=40&v=4)
 
 * **André Wuttig** - *Initial work, Unit Tests* - [aWuttig](https://github.com/aWuttig)
 * **Christian Deussen** - *Bugfixes* - [nullsub](https://github.com/nullsub)
